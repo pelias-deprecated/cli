@@ -1,0 +1,41 @@
+#! /usr/bin/env bash
+
+if [ -z "$1" ]; then
+	>&2 echo "Missing subcommand."
+else
+	IFS="#"
+	components=($1)
+	subcommand="${components[0]}"
+	branch=${components[1]}
+	if [ "$branch" = "" ]; then
+		branch=master
+	fi
+	script="$2"
+	script_args=(${@:3})
+fi
+
+pelias_dir=~/.pelias
+if ! [ -d "$pelias_dir" ]; then
+	mkdir "$pelias_dir"
+fi
+
+cd "$pelias_dir"
+if ! [ -d "$subcommand" ]; then
+	echo "$subcommand not found in cache."
+	echo "Cloning $subcommand."
+	git clone -q "https://github.com/pelias/$subcommand"
+	echo "Installing dependencies."
+	cd "$subcommand"
+	git checkout -q $branch
+	npm install > /dev/null
+else
+	cd "$subcommand"
+	git checkout -q $branch
+	if ! [ "$(git fetch --dry-run)" = "" ]; then
+		echo "Updating $subcommand."
+		git pull
+		npm install
+	fi
+fi
+
+npm -s run $script -- $script_args
