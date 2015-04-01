@@ -26,18 +26,15 @@ check for upstream changes and pull them/reinstall in if necessary.
 EOF
 )
 
-print_error(){
-	>&2 printf "Error: $1\n\n$help_message\n"
-}
-
 if [ -z "$1" ]; then
-	print_error "Missing argument."
+	>&2 echo "Missing argument."
+	>&2 echo "$help_message"
 	exit 1
 elif [ "$1" = "--help" ]; then
 	echo "$help_message"
 	exit 0
 elif [ -z "$2" ]; then
-	print_error "Missing subcommand."
+	>&2 echo "Missing script argument."
 	exit 1
 else
 	IFS="#"
@@ -60,7 +57,11 @@ cd "$pelias_dir"
 if ! [ -d "$subcommand" ]; then
 	echo "$subcommand not found in cache."
 	echo "Cloning $subcommand."
-	git clone -q "https://github.com/pelias/$subcommand"
+	git clone -q "git@github.com:pelias/$subcommand"
+	if [ $? -ne 0 ]; then
+		>&2 echo "$subcommand does not exist!"
+		exit 1
+	fi
 	echo "Installing dependencies."
 	cd "$subcommand"
 	git checkout -q $branch
@@ -75,4 +76,4 @@ else
 	fi
 fi
 
-npm -s run $script -- $script_args
+npm -s run $script -- ${script_args[@]}
