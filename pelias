@@ -15,28 +15,37 @@ anything that can be executed via `npm run` inside that package.
 
 Repositories will be stored inside `~/.pelias/`. When one is invoked and isn't
 found locally, it'll be cloned and `npm install`'d; otherwise, the tool will
-check for upstream changes and pull them/reinstall in if necessary.
+check for upstream changes and pull them in/reinstall packages if necessary.
 
 	--help: Print this help message and exit.
 	<subcommand>: The name of the repository under github.com/pelias/ to target.
 	[<tag>]: A specific commit hash, branch name, or tag to `git checkout`
 		inside the <subcommand> repo.
-	<script>: The script defined inside the <subcommand> repo's package.json to run.
+	<script>: The script defined inside the <subcommand> repo's package.json to
+		run.  If missing, all available scripts will be listed.
 	[args]: Any args to pass to <script>
+
+Examples:
+
+	pelias api start
+	pelias geonames#a04dfe import
+	pelias openstreetmap#experimental-branch import
+
 EOF
 )
 
 if [ -z "$1" ]; then
-	>&2 echo "Missing argument."
+	>&2 echo 'Missing argument. `pelias --help`'
 	>&2 echo "$help_message"
 	exit 1
 elif [ "$1" = "--help" ]; then
 	echo "$help_message"
 	exit 0
-elif [ -z "$2" ]; then
-	>&2 echo "Missing script argument."
-	exit 1
 else
+	if [ -z "$2" ]; then
+		>&2 echo 'Missing script argument. `pelias --help` for details.'
+	fi
+
 	IFS="#"
 	components=($1)
 	subcommand="${components[0]}"
@@ -76,4 +85,8 @@ else
 	fi
 fi
 
-npm -s run $script -- ${script_args[@]}
+if [ -z $script ]; then
+	npm run
+else
+	npm -s run $script -- ${script_args[@]}
+fi
