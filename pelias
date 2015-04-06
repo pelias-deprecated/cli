@@ -34,16 +34,24 @@ Examples:
 EOF
 )
 
+printOut(){
+	echo "[38;5;39mpelias: [00m$1"
+}
+
+printErr(){
+	>&2 echo "[38;5;39mpelias: [38;5;196mError: [00m$1"
+}
+
 if [ -z "$1" ]; then
-	>&2 echo 'Missing argument. `pelias --help`'
-	>&2 echo "$help_message"
+	printErr 'Missing argument. `pelias --help`'
+	printErr "$help_message"
 	exit 1
 elif [ "$1" = "--help" ]; then
-	echo "$help_message"
+	printOut "$help_message"
 	exit 0
 else
 	if [ -z "$2" ]; then
-		>&2 echo 'Missing script argument. `pelias --help` for details.'
+		printErr 'Missing script argument. `pelias --help` for details.'
 	fi
 
 	IFS="#"
@@ -64,14 +72,14 @@ fi
 
 cd "$pelias_dir"
 if ! [ -d "$subcommand" ]; then
-	echo "$subcommand not found in cache."
-	echo "Cloning $subcommand."
+	printOut "$subcommand not found in cache."
+	printOut "Cloning $subcommand."
 	git clone -q "git@github.com:pelias/$subcommand"
 	if [ $? -ne 0 ]; then
-		>&2 echo "$subcommand does not exist!"
+		printErr "Repository $subcommand does not exist!"
 		exit 1
 	fi
-	echo "Installing dependencies."
+	printOut "Installing dependencies."
 	cd "$subcommand"
 	git checkout -q $branch
 	npm install > /dev/null
@@ -79,7 +87,7 @@ else
 	cd "$subcommand"
 	git checkout -q $branch
 	if ! [ "$(git fetch --dry-run)" = "" ]; then
-		echo "Updating $subcommand."
+		printOut "Updating $subcommand."
 		git pull
 		npm install
 	fi
@@ -87,6 +95,7 @@ fi
 
 if [ -z $script ]; then
 	npm run
+	exit 1
 else
 	npm -s run $script -- ${script_args[@]}
 fi
