@@ -19,11 +19,17 @@ function printOut( msg ){
   console.log( 'pelias:'.blue, msg );
 }
 
+var helpMessage = fs.readFileSync( 'HELP.txt' ).toString();
 var targetRepo = {};
 
 if( args.length === 0 ){
-  printErr( 'Missing repo name. See `pelias --help` for usage.' );
+  printErr( 'Missing repo name.' );
+  printErr( helpMessage );
   process.exit( 1 );
+}
+else if( args[ 0 ] === '--help' ){
+  printOut( helpMessage );
+  process.exit();
 }
 else {
   if( args.length === 1 ){
@@ -93,4 +99,5 @@ if( targetRepo.subcommand ){
 }
 else {
   console.log( $( 'npm run' ) );
+  process.exit( 1 );
 }

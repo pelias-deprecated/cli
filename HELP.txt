@@ -1,0 +1,29 @@
+usage: pelias --help | <subcommand>[#<tag>] <script> [scriptArgs]
+
+`pelias` is a lightweight tool that abstracts away all of the Pelias
+repositories behind one CLI, so that users no longer have to worry about
+cloning, installing, and generally dealing with multiple moving parts in
+different places (like the API, schema, and various importers). The tool
+accepts two parameters: the repository to target, and the script inside it to
+run. `pelias api start` will target the `start` script inside the
+`github.com/pelias/api` repository. The scripts are defined inside that
+repository's `package.json`'s `scripts` object; in other words, they're
+anything that can be executed via `npm run` inside that package.
+
+Repositories will be stored inside `~/.pelias/`. When one is invoked and isn't
+found locally, it'll be cloned and `npm install`'d; otherwise, the tool will
+check for upstream changes and pull them in/reinstall packages if necessary.
+
+	--help: Print this help message and exit.
+	<subcommand>: The name of the repository under github.com/pelias/ to target.
+	[<tag>]: A specific commit hash, branch name, or tag to `git checkout`
+		inside the <subcommand> repo.
+	<script>: The script defined inside the <subcommand> repo's package.json to
+		run.  If missing, all available scripts will be listed.
+	[args]: Any args to pass to <script>
+
+Examples:
+
+	pelias api start
+	pelias geonames#a04dfe import
+	pelias openstreetmap#experimental-branch import
