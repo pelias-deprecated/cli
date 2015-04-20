@@ -7,16 +7,27 @@ var fs = require( 'fs' );
 var util = require( 'util' );
 var args = process.argv.slice( 2 );
 
+/**
+ * A visually unobtrusive way of executing a shell command and returning its
+ * `stdout`.
+ */
 function $( shellCmd ){
   return childProcess.execSync( shellCmd ).toString();
 }
 
-function printErr( msg ){
-  console.error( 'pelias:'.blue, 'error:'.red, msg );
-}
-
+/**
+ * Print `msg` to `stdout`, padding it with "pelias: " to distinguish it from
+ * the output of the external commands run by this script.
+ */
 function printOut( msg ){
   console.log( 'pelias:'.blue, msg );
+}
+
+/**
+ * Like `printOut`, but for printing to `stderr`.
+ */
+function printErr( msg ){
+  console.error( 'pelias:'.blue, 'error:'.red, msg );
 }
 
 var helpMessage = fs.readFileSync( 'HELP.txt' ).toString();
@@ -54,6 +65,10 @@ else {
 }
 
 var peliasCachePath = path.join( process.env.HOME, '.pelias/' );
+if( !fs.existsSync( peliasCachePath ) ){
+  fs.mkdirSync( peliasCachePath );
+}
+
 var repoPath = path.join( peliasCachePath, targetRepo.name );
 if( fs.existsSync( repoPath ) ){
   process.chdir( repoPath );
@@ -67,13 +82,14 @@ if( fs.existsSync( repoPath ) ){
     }
   }
   else {
+    printOut( 'Checking out: ' + targetRepo.branch );
     $( 'git checkout -q ' + targetRepo.branch );
     var stale = $( 'git fetch --dry-run' ).length > 0;
     if( stale ){
       printOut( 'Pulling latest changes.' );
       $( 'git pull' );
     }
-    printOut( 'Installing.' );
+    printOut( 'npm installing.' );
     $( 'npm install' );
   }
 }
@@ -83,16 +99,18 @@ else {
   $( 'git clone -q https://github.com/pelias/' + targetRepo.name );
   process.chdir( targetRepo.name );
   if( targetRepo.branch !== 'master' ){
+    printOut( 'Checking out: ' + targetRepo.branch );
     $( 'git checkout -q ' + targetRepo.branch );
   }
-  printOut( 'Installing.' );
+  printOut( 'npm installing.' );
   $( 'npm install' );
 }
 
 if( targetRepo.subcommand ){
-  var proc = childProcess.spawn( 'npm', [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs ) );
+  var npmScriptArgs = [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs );
+  var npmScriptProc = childProcess.spawn( 'npm', npmScriptArgs );
   [ 'stdout', 'stderr' ].forEach( function ( outType ){
-    proc[ outType ].on( 'data', function ( data ){
+    npmScriptProc[ outType ].on( 'data', function ( data ){
       process[ outType ].write( data.toString() );
     });
   });
