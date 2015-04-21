@@ -179,25 +179,7 @@ function runRepoSubcommand( targetRepo ){
 
   var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
   var commandStr = command + ' ' + targetRepo.subcommandArgs.join( ' ' );
-  var subcommandProc = childProcess.exec( commandStr );
-
-  // Redirect `subcommandProc`'s stdout/stderr to this process's stdout/stderr
-  // respectively.
-  [ 'stdout', 'stderr' ].forEach( function ( outType ){
-    subcommandProc[ outType ].on( 'data', function ( data ){
-      process[ outType ].write( data.toString() );
-    });
-  });
-
-  // Report failures in `subcommandProc`.
-  subcommandProc.on( 'exit', function ( code, signal ){
-    if( code !== 0 ){
-      printErr( util.format( '`%s` had non-zero exit code `%s`', commandStr, code ) );
-      if( signal !== null ){
-        printErr( 'Received signal:', signal );
-      }
-    }
-  });
+  var subcommandProc = childProcess.execSync( commandStr, { stdio: 'inherit' });
 }
 
 runRepoSubcommand( parseArgs( process.argv.slice( 2 ) ) );
