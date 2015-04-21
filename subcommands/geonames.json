@@ -1,0 +1,6 @@
+{
+  "import": {
+    "description": "Run the GeoNames importer.",
+    "command": "./bin/pelias-geonames"
+  }
+}

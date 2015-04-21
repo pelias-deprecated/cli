@@ -1,0 +1,10 @@
+{
+  "test": {
+    "description": "Run unit tests.",
+    "command": "node test/run.js | tap-spec"
+  },
+  "import": {
+    "description": "Run the OpenStreetMap import.",
+    "command": "node index.js"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "test": {
+    "description": "Run unit tests.",
+    "command": "node test/test | tap-spec"
+  },
+  "import": {
+    "description": "Run the Quattroshapes import.",
+    "command": "node example/runme.js"
+  }
+}
