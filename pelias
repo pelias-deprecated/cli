@@ -1,5 +1,9 @@
 #! /usr/bin/env node
 
+/**
+ * The Pelias command-line power tool.
+ */
+
 'use strict';
 
 var colors = require( 'colors' );
@@ -8,7 +12,7 @@ var path = require( 'path' );
 var fs = require( 'fs' );
 var util = require( 'util' );
 
-var helpMessage = fs.readFileSync( 'HELP.txt' ).toString();
+var helpMessage = fs.readFileSync( './HELP.txt' ).toString();
 
 /**
  * A visually unobtrusive way of executing a shell command and returning its
@@ -55,7 +59,7 @@ function parseArgs( args ){
   }
   else {
     if( args.length === 1 ){
-      printErr( 'Missing repo subcommand.' );
+      printErr( 'Missing repo subcommand. Here are the available subcommands:' );
     }
     else {
       targetRepo.subcommand = args[ 1 ];
@@ -127,6 +131,15 @@ function runRepoSubcommand( targetRepo ){
   }
 
   if( targetRepo.subcommand ){
+    var packageScripts = require( './package.json' ).scripts;
+    if( typeof scripts !== 'object' || scripts[ targetRepo.subcommand ] === undefined ){
+      printErr( util.format(
+        'Subcommand `%s` does not exist. Run `pelias %s` to see a list of all available subcommands.',
+        targetRepo.subcommand, targetRepo.name
+      ));
+      process.exit( 1 );
+    }
+
     var npmScriptArgs = [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs );
     var npmScriptProc = childProcess.spawn( 'npm', npmScriptArgs );
     [ 'stdout', 'stderr' ].forEach( function ( outType ){
@@ -134,6 +147,15 @@ function runRepoSubcommand( targetRepo ){
         process[ outType ].write( data.toString() );
       });
     });
+
+    npmScriptProc.on( 'exit', function ( code, signal ){
+      if( code !== 0 ){
+        printErr( util.format( '`npm %s` had non-zero exit code `%s`', npmScriptArgs.join( ' ' ), code ) );
+        if( signal !== null ){
+          printErr( 'Received signal received:', signal );
+        }
+      }
+    } )
   }
   else {
     console.log( $( 'npm run' ) );
