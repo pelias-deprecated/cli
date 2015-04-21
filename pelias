@@ -6,7 +6,7 @@
 
 'use strict';
 
-var colors = require( 'colors' );
+var colors = require( 'colors' ); /* jshint ignore:line */
 var childProcess = require( 'child_process' );
 var path = require( 'path' );
 var fs = require( 'fs' );
@@ -38,6 +38,14 @@ function printOut( msg ){
  */
 function printErr( msg ){
   console.error( 'pelias:'.blue, 'error:'.red, msg );
+}
+
+/**
+ * Returns a boolean indicating whether the Git repository in the current
+ * dictory has upstream changes that need to be pulled in.
+ */
+function isGitBranchStale(){
+  return $( 'git fetch --dry-run 2>&1' ).length > 0;
 }
 
 function printRepoSubcommands( repoName ){
@@ -129,8 +137,7 @@ function runRepoSubcommand( targetRepo ){
   if( fs.existsSync( repoPath ) ){
     process.chdir( repoPath );
     if( $( 'git rev-parse --abbrev-ref HEAD' ).trim() === targetRepo.branch ){
-      var stale = $( 'git fetch --dry-run 2>&1' ).length > 0;
-      if( stale ){
+      if( isGitBranchStale() ){
         printOut( 'Pulling latest changes.' );
         $( 'git pull' );
         printOut( 'Reinstalling.' );
@@ -140,8 +147,7 @@ function runRepoSubcommand( targetRepo ){
     else {
       printOut( 'Checking out: ' + targetRepo.branch );
       $( 'git checkout -q ' + targetRepo.branch );
-      var stale = $( 'git fetch --dry-run' ).length > 0;
-      if( stale ){
+      if( isGitBranchStale() ){
         printOut( 'Pulling latest changes.' );
         $( 'git pull' );
       }
@@ -162,7 +168,6 @@ function runRepoSubcommand( targetRepo ){
     $( 'npm install' );
   }
 
-  var npmScriptArgs = [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs );
   var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
   var commandStr = command + ' ' + targetRepo.subcommandArgs.join( ' ' );
   var subcommandProc = childProcess.exec( commandStr );
