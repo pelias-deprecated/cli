@@ -11,8 +11,11 @@ var childProcess = require( 'child_process' );
 var path = require( 'path' );
 var fs = require( 'fs' );
 var util = require( 'util' );
+var requireDir = require( 'require-dir' );
 
-var helpMessage = fs.readFileSync( './HELP.txt' ).toString();
+var subcommands = requireDir( 'subcommands' );
+
+var helpMessage = fs.readFileSync( path.join(__dirname, 'HELP.txt' ) ).toString();
 
 /**
  * A visually unobtrusive way of executing a shell command and returning its
@@ -58,13 +61,6 @@ function parseArgs( args ){
     process.exit();
   }
   else {
-    if( args.length === 1 ){
-      printErr( 'Missing repo subcommand. Here are the available subcommands:' );
-    }
-    else {
-      targetRepo.subcommand = args[ 1 ];
-    }
-
     var repoBranchNames = args[ 0 ];
     var poundIndex = repoBranchNames.indexOf( '#' );
     if( poundIndex === -1 ){
@@ -76,6 +72,30 @@ function parseArgs( args ){
       targetRepo.branch = repoBranchNames.substring( poundIndex + 1 );
     }
 
+    if( !subcommands.hasOwnProperty( targetRepo.name ) ){
+      printErr( util.format(
+        'Repo %s has no subcommands. Open an issue at github.com/pelias/cli if you believe it should.',
+        targetRepo.name
+      ));
+      process.exit();
+    }
+
+    var commands = subcommands[ targetRepo.name ];
+
+    if( args.length === 1 ){
+      printErr( 'Missing repo subcommand. Available subcommands will be listed below.' );
+      for( var command in commands ){
+        var commandObj = commands[ command ];
+        printErr( util.format( '    %s: %s', command.green, commandObj.description ) );
+      }
+      process.exit();
+    }
+
+    targetRepo.subcommand = args[ 1 ];
+    if( commands[ targetRepo.subcommand ] === undefined ){
+      printErr( util.format( 'Subcommand `%s` not found.', targetRepo.subcommand ) );
+      process.exit();
+    }
     targetRepo.subcommandArgs = args.slice( 2 );
   }
 
@@ -130,28 +150,24 @@ function runRepoSubcommand( targetRepo ){
     $( 'npm install' );
   }
 
-  if( targetRepo.subcommand ){
-    var npmScriptArgs = [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs );
-    var npmScriptProc = childProcess.spawn( 'npm', npmScriptArgs );
-    [ 'stdout', 'stderr' ].forEach( function ( outType ){
-      npmScriptProc[ outType ].on( 'data', function ( data ){
-        process[ outType ].write( data.toString() );
-      });
+  var npmScriptArgs = [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs );
+  var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
+  var commandStr = command + ' ' + targetRepo.subcommandArgs.join( ' ' );
+  var subcommandProc = childProcess.exec( commandStr );
+  [ 'stdout', 'stderr' ].forEach( function ( outType ){
+    subcommandProc[ outType ].on( 'data', function ( data ){
+      process[ outType ].write( data.toString() );
     });
+  });
 
-    npmScriptProc.on( 'exit', function ( code, signal ){
-      if( code !== 0 ){
-        printErr( util.format( '`npm %s` had non-zero exit code `%s`', npmScriptArgs.join( ' ' ), code ) );
-        if( signal !== null ){
-          printErr( 'Received signal received:', signal );
-        }
+  subcommandProc.on( 'exit', function ( code, signal ){
+    if( code !== 0 ){
+      printErr( util.format( '`%s` had non-zero exit code `%s`', commandStr, code ) );
+      if( signal !== null ){
+        printErr( 'Received signal:', signal );
       }
-    } )
-  }
-  else {
-    console.log( $( 'npm run' ) );
-    process.exit( 1 );
-  }
+    }
+  });
 }
 
 runRepoSubcommand( parseArgs( process.argv.slice( 2 ) ) );

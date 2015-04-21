@@ -12,8 +12,9 @@
   "devDependencies": {
     "precommit-hook": "1.0.7"
   },
-  "dependencies": {
-    "colors": "1.0.3"
+  "cependencies": {
+    "colors": "1.0.3",
+    "require-dir": "0.3.0"
   },
   "repository": {
     "type": "git",
