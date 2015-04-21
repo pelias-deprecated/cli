@@ -9,7 +9,12 @@
   "bin": {
     "pelias": "./pelias.js"
   },
+  "scripts": {
+    "test": "node test/test.js | tap-spec"
+  },
   "devDependencies": {
+    "tape": "3.0.3",
+    "tap-spec": "2.1.2",
     "precommit-hook": "1.0.7"
   },
   "dependencies": {
