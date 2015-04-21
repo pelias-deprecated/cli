@@ -40,6 +40,15 @@ function printErr( msg ){
   console.error( 'pelias:'.blue, 'error:'.red, msg );
 }
 
+function printRepoSubcommands( repoName ){
+  printOut( util.format( 'Here are the avilable subcommands for `%s`.', repoName ) );
+  var commands = subcommands[ repoName ];
+  for( var command in commands ){
+    var commandObj = commands[ command ];
+    printOut( util.format( '    %s: %s', command.green, commandObj.description ) );
+  }
+}
+
 /**
  * Parse the command-line arguments in `args`, which should be the equivalent
  * of `process.argv.slice( 2 )`, and return an object containing:
@@ -74,26 +83,29 @@ function parseArgs( args ){
 
     if( !subcommands.hasOwnProperty( targetRepo.name ) ){
       printErr( util.format(
-        'Repo %s has no subcommands. Open an issue at github.com/pelias/cli if you believe it should.',
+        'Repo `%s` has no subcommands. Open an issue at github.com/pelias/cli if you believe it should.',
         targetRepo.name
       ));
+
+      printErr( 'Here are the available repos:' );
+      for( var repo in subcommands ){
+        printErr( '    ' + repo.green );
+      }
       process.exit();
     }
 
     var commands = subcommands[ targetRepo.name ];
 
     if( args.length === 1 ){
-      printErr( 'Missing repo subcommand. Available subcommands will be listed below.' );
-      for( var command in commands ){
-        var commandObj = commands[ command ];
-        printErr( util.format( '    %s: %s', command.green, commandObj.description ) );
-      }
+      printErr( 'Missing repo subcommand.' );
+      printRepoSubcommands( targetRepo.name );
       process.exit();
     }
 
     targetRepo.subcommand = args[ 1 ];
     if( commands[ targetRepo.subcommand ] === undefined ){
       printErr( util.format( 'Subcommand `%s` not found.', targetRepo.subcommand ) );
+      printRepoSubcommands( targetRepo.name );
       process.exit();
     }
     targetRepo.subcommandArgs = args.slice( 2 );
