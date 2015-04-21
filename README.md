@@ -1,9 +1,13 @@
 # pelias-cli
+[![NPM](https://nodei.co/npm/pelias-cli.png)](https://nodei.co/npm/pelias-cli/)
+
 The Pelias command-line powertool, which lets you interact with all of the key repositories (like the API,
 elasticsearch schema, and importers) in one place via `git`-style subcommands.
 
 ## install
-Just drop `pelias` into your `PATH`.
+```
+sudo npm install -g pelias-cli
+```
 
 ## usage
 
@@ -21,3 +25,8 @@ pelias openstreetmap import
 pelias geonames#experimental-branch import -i US
 pelias api start
 ```
+
+## registering repos with the CLI
+The CLI only recognizes Pelias repositories with a correspondingly named JSON configuration file in `subcommands/` (for
+instance, `subcommands/api.json` for the `pelias/api` repository). Each one defines the available scripts, with a
+description and the shell command(s) it aliases to.
