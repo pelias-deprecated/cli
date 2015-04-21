@@ -48,6 +48,9 @@ function isGitBranchStale(){
   return $( 'git fetch --dry-run 2>&1' ).length > 0;
 }
 
+/**
+ * Pretty-print all of the subcommands available for repo named `repoName`.
+ */
 function printRepoSubcommands( repoName ){
   printOut( util.format( 'Here are the avilable subcommands for `%s`.', repoName ) );
   var commands = subcommands[ repoName ];
@@ -171,12 +174,16 @@ function runRepoSubcommand( targetRepo ){
   var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
   var commandStr = command + ' ' + targetRepo.subcommandArgs.join( ' ' );
   var subcommandProc = childProcess.exec( commandStr );
+
+  // Redirect `subcommandProc`'s stdout/stderr to this process's stdout/stderr
+  // respectively.
   [ 'stdout', 'stderr' ].forEach( function ( outType ){
     subcommandProc[ outType ].on( 'data', function ( data ){
       process[ outType ].write( data.toString() );
     });
   });
 
+  // Report failures in `subcommandProc`.
   subcommandProc.on( 'exit', function ( code, signal ){
     if( code !== 0 ){
       printErr( util.format( '`%s` had non-zero exit code `%s`', commandStr, code ) );
