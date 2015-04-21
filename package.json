@@ -12,7 +12,7 @@
   "devDependencies": {
     "precommit-hook": "1.0.7"
   },
-  "cependencies": {
+  "dependencies": {
     "colors": "1.0.3",
     "require-dir": "0.3.0"
   },

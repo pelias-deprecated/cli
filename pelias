@@ -15,8 +15,6 @@ var requireDir = require( 'require-dir' );
 
 var subcommands = requireDir( 'subcommands' );
 
-var helpMessage = fs.readFileSync( path.join(__dirname, 'HELP.txt' ) ).toString();
-
 /**
  * A visually unobtrusive way of executing a shell command and returning its
  * `stdout`.
@@ -61,6 +59,16 @@ function printRepoSubcommands( repoName ){
 }
 
 /**
+ * Print the names of all the repos that have subcommands.
+ */
+function printRepoNames(){
+  printOut( 'Here are the available repos:' );
+  for( var repo in subcommands ){
+    printOut( '    ' + repo.green );
+  }
+}
+
+/**
  * Parse the command-line arguments in `args`, which should be the equivalent
  * of `process.argv.slice( 2 )`, and return an object containing:
  *
@@ -73,10 +81,11 @@ function parseArgs( args ){
   var targetRepo = {};
   if( args.length === 0 ){
     printErr( 'Missing repo name.' );
-    printErr( helpMessage );
+    printRepoNames();
     process.exit( 1 );
   }
   else if( args[ 0 ] === '--help' ){
+    var helpMessage = fs.readFileSync( path.join(__dirname, 'HELP.txt' ) ).toString();
     printOut( helpMessage );
     process.exit();
   }
@@ -98,10 +107,7 @@ function parseArgs( args ){
         targetRepo.name
       ));
 
-      printErr( 'Here are the available repos:' );
-      for( var repo in subcommands ){
-        printErr( '    ' + repo.green );
-      }
+      printRepoNames();
       process.exit();
     }
 
