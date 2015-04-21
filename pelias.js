@@ -184,7 +184,7 @@ function runRepoSubcommand( targetRepo ){
 
   var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
   var commandStr = command + ' ' + targetRepo.subcommandArgs.join( ' ' );
-  var subcommandProc = childProcess.execSync( commandStr, { stdio: 'inherit' });
+  childProcess.execSync( commandStr, { stdio: 'inherit' });
 }
 
 runRepoSubcommand( parseArgs( process.argv.slice( 2 ) ) );

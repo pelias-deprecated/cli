@@ -7,7 +7,7 @@
   "main": "index.js",
   "preferGlobal": true,
   "bin": {
-    "pelias": "./pelias"
+    "pelias": "./pelias.js"
   },
   "devDependencies": {
     "precommit-hook": "1.0.7"
