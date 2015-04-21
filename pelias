@@ -131,15 +131,6 @@ function runRepoSubcommand( targetRepo ){
   }
 
   if( targetRepo.subcommand ){
-    var packageScripts = require( './package.json' ).scripts;
-    if( typeof scripts !== 'object' || scripts[ targetRepo.subcommand ] === undefined ){
-      printErr( util.format(
-        'Subcommand `%s` does not exist. Run `pelias %s` to see a list of all available subcommands.',
-        targetRepo.subcommand, targetRepo.name
-      ));
-      process.exit( 1 );
-    }
-
     var npmScriptArgs = [ '-s', 'run', targetRepo.subcommand, '--' ].concat( targetRepo.subcommandArgs );
     var npmScriptProc = childProcess.spawn( 'npm', npmScriptArgs );
     [ 'stdout', 'stderr' ].forEach( function ( outType ){
