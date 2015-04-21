@@ -131,6 +131,12 @@ function parseArgs( args ){
   return targetRepo;
 }
 
+function npmInstall(){
+  if( fs.existsSync( 'package.json' ) ){
+    $( 'npm install' );
+  }
+}
+
 /**
  * The core of the script, which handles repository cloning, pulling,
  * installing, and subcommand running. The `targetRepo` object argument is
@@ -150,7 +156,6 @@ function runRepoSubcommand( targetRepo ){
         printOut( 'Pulling latest changes.' );
         $( 'git pull' );
         printOut( 'Reinstalling.' );
-        $( 'npm install' );
       }
     }
     else {
@@ -161,7 +166,7 @@ function runRepoSubcommand( targetRepo ){
         $( 'git pull' );
       }
       printOut( 'npm installing.' );
-      $( 'npm install' );
+      npmInstall();
     }
   }
   else {
@@ -174,7 +179,7 @@ function runRepoSubcommand( targetRepo ){
       $( 'git checkout -q ' + targetRepo.branch );
     }
     printOut( 'npm installing.' );
-    $( 'npm install' );
+    npmInstall();
   }
 
   var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
