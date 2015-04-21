@@ -6,9 +6,8 @@ cloning, installing, and generally dealing with multiple moving parts in
 different places (like the API, schema, and various importers). The tool
 accepts two parameters: the repository to target, and the script inside it to
 run. `pelias api start` will target the `start` script inside the
-`github.com/pelias/api` repository. The scripts are defined inside that
-repository's `package.json`'s `scripts` object; in other words, they're
-anything that can be executed via `npm run` inside that package.
+`github.com/pelias/api` repository. The scripts themselves are defined on a
+per-repository basis inside `pelias-cli`.
 
 Repositories will be stored inside `~/.pelias/`. When one is invoked and isn't
 found locally, it'll be cloned and `npm install`'d; otherwise, the tool will
