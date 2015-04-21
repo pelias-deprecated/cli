@@ -82,6 +82,7 @@ function parseArgs( args ){
   if( args.length === 0 ){
     printErr( 'Missing repo name.' );
     printRepoNames();
+    printErr( 'See `pelias --help`.' );
     process.exit( 1 );
   }
   else if( args[ 0 ] === '--help' ){
