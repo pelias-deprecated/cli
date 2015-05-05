@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "colors": "1.0.3",
-    "require-dir": "0.3.0"
+    "require-dir": "0.3.0",
+    "runsync": "0.1.8"
   },
   "repository": {
     "type": "git",

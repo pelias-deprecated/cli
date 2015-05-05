@@ -7,11 +7,11 @@
 'use strict';
 
 var colors = require( 'colors' ); /* jshint ignore:line */
-var childProcess = require( 'child_process' );
 var path = require( 'path' );
 var fs = require( 'fs' );
 var util = require( 'util' );
 var requireDir = require( 'require-dir' );
+var runsync = require( 'runsync' );
 
 var subcommands = requireDir( 'subcommands' );
 
@@ -20,7 +20,7 @@ var subcommands = requireDir( 'subcommands' );
  * `stdout`.
  */
 function $( shellCmd ){
-  return childProcess.execSync( shellCmd ).toString();
+  return runsync.exec( shellCmd ).toString();
 }
 
 /**
@@ -185,7 +185,7 @@ function runRepoSubcommand( targetRepo ){
 
   var command = subcommands[ targetRepo.name ][ targetRepo.subcommand ].command;
   var commandStr = command + ' ' + targetRepo.subcommandArgs.join( ' ' );
-  childProcess.execSync( commandStr, { stdio: 'inherit' });
+  runsync.exec( commandStr, { stdio: 'inherit' });
 }
 
 runRepoSubcommand( parseArgs( process.argv.slice( 2 ) ) );
