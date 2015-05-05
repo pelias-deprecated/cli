@@ -1,6 +1,6 @@
 {
   "name": "pelias-cli",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "The Pelias command-line power tool.",
   "keywords": ["pelias", "cli", "utility"],
   "author": "mapzen",
