@@ -9,6 +9,9 @@
   "bin": {
     "pelias": "./pelias.js"
   },
+  "engines": {
+    "node": ">=0.12"
+  },
   "scripts": {
     "test": "node test/test.js | tap-spec"
   },

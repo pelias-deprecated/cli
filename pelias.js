@@ -8,6 +8,11 @@
 
 var colors = require( 'colors' ); /* jshint ignore:line */
 var childProcess = require( 'child_process' );
+if( !childProcess.hasOwnProperty( 'execSync' ) ){
+  printErr( '`require("child_process").execSync()` does not exist! Make sure you\'re using Node version >= 0.12' );
+  process.exit( 1 );
+}
+
 var path = require( 'path' );
 var fs = require( 'fs' );
 var util = require( 'util' );
