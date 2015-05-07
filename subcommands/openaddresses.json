@@ -1,0 +1,10 @@
+{
+  "test": {
+    "description": "Run unit tests.",
+    "command": "node test/test.js | tap-spec"
+  },
+  "import": {
+    "description": "Run the OpenAddresses import.",
+    "command": "node import.js"
+  }
+}

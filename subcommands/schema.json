@@ -1,0 +1,18 @@
+{
+  "reset_type": {
+    "description": "Reset (or drop all records in) a single type in the Pelias elasticsearch index.",
+    "command": "node scripts/reset_type"
+  },
+  "drop_index": {
+    "description": "Delete the Pelias elasticsearch index.",
+    "command": "node scripts/drop_index"
+  },
+  "create_index": {
+    "description": "Create the Pelias elasticsearch index.",
+    "command": "node scripts/create_index"
+  },
+  "test": {
+    "description": "Run unit tests.",
+    "command": "node test/run.js | tap-spec"
+  }
+}

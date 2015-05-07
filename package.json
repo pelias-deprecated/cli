@@ -1,0 +1,36 @@
+{
+  "name": "pelias-cli",
+  "version": "0.0.5",
+  "description": "The Pelias command-line power tool.",
+  "keywords": ["pelias", "cli", "utility"],
+  "author": "mapzen",
+  "main": "index.js",
+  "preferGlobal": true,
+  "bin": {
+    "pelias": "./pelias.js"
+  },
+  "engines": {
+    "node": ">=0.12"
+  },
+  "scripts": {
+    "test": "node test/test.js | tap-spec"
+  },
+  "devDependencies": {
+    "tape": "3.0.3",
+    "tap-spec": "2.1.2",
+    "precommit-hook": "1.0.7"
+  },
+  "dependencies": {
+    "colors": "1.0.3",
+    "require-dir": "0.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pelias/cli"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pelias/cli/issues"
+  },
+  "homepage": "https://github.com/pelias/cli"
+}

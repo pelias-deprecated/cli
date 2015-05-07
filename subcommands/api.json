@@ -1,0 +1,10 @@
+{
+  "test": {
+    "description": "Run unit tests.",
+    "command": "npm run unit && npm run ciao"
+  },
+  "start": {
+    "description": "Run the API.",
+    "command": "node index.js"
+  }
+}

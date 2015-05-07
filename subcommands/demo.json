@@ -1,0 +1,6 @@
+{
+  "start": {
+    "description": "Run the demo application.",
+    "command": "bash server.sh"
+  }
+}
